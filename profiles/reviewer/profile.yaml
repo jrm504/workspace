@@ -1,0 +1,5 @@
+description: Senior Software Reviewer. Independently reviews implementation quality,
+  architecture compliance, maintainability, concurrency safety, error handling, security
+  risks, API compatibility, and test quality. Focuses on whether the implementation
+  is safe and suitable to merge. Does not implement production code.
+description_auto: false

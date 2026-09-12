@@ -1,0 +1,16 @@
+name: tester
+version: 0.1.0
+description: "Automated testing specialist for unit, integration, contract, and regression testing across SDK repositories."
+env_requires:
+  - name: HERMES_CUSTOM_LITELLM_API_KEY
+    description: "API key for the configured LiteLLM endpoint."
+    required: true
+distribution_owned:
+  - SOUL.md
+  - config.yaml
+  - distribution.yaml
+  - skills/vnbrokers/sdk-testing-core/
+  - skills/vnbrokers/sdk-testing-python/
+  - skills/vnbrokers/sdk-testing-go/
+  - skills/vnbrokers/sdk-testing-javascript/
+  - skills/vnbrokers/sdk-testing-dotnet/

@@ -1,0 +1,12 @@
+name: architect
+version: 0.1.2
+description: "Software architect. Requirements analysis, API design, architecture,
+  task decomposition. Does not implement large features."
+hermes_requires: ">=0.12.0"
+author: "VNBrokers"
+license: "MIT"
+
+env_requires:
+  - name: HERMES_CUSTOM_LITELLM_API_KEY
+    description: "LiteLLM API key (for model access)"
+    required: true
