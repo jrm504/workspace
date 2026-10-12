@@ -1,0 +1,16 @@
+name: developer
+version: 0.1.0
+description: "Generic production implementation specialist for Python, Go, JavaScript/TypeScript, and .NET repositories."
+env_requires:
+  - name: HERMES_CUSTOM_LITELLM_API_KEY
+    description: "API key for the configured LiteLLM endpoint."
+    required: true
+distribution_owned:
+  - SOUL.md
+  - config.yaml
+  - distribution.yaml
+  - skills/hoalu/sdk-development-core/
+  - skills/hoalu/sdk-development-python/
+  - skills/hoalu/sdk-development-go/
+  - skills/hoalu/sdk-development-javascript/
+  - skills/hoalu/sdk-development-dotnet/

@@ -1,0 +1,37 @@
+services:
+  llama-swap:
+    # build:
+    #   context: .
+    #   args:
+    #     ROCM_TAG: 7.2.4-complete
+    #     GFX_TARGET: gfx1030
+    image: llama-swap-gfx1030
+    container_name: llama-swap
+    profiles: ["rocm"]
+    restart: unless-stopped
+    volumes:
+      - ./models:/models
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - "${VIDEO_GID}" # $(getent group video | cut -d: -f3)
+      - "${RENDER_GID}" # $(getent group render | cut -d: -f3)
+    security_opt:
+      - seccomp=unconfined
+    environment:
+      - "LLAMA_SWAP_API_KEY=${LLAMA_SWAP_API_KEY:?required}"  
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: homelab_frontend
+      traefik.http.routers.llama-swap.rule: "Host(`${LLAMA_SWAP_DOMAIN:-llama-swap.internal}`)"
+      traefik.http.routers.llama-swap.entrypoints: websecure
+      traefik.http.routers.llama-swap.tls: "true"
+      traefik.http.routers.llama-swap.tls.certresolver: stepca
+      traefik.http.services.llama-swap.loadbalancer.server.port: "8080"
+    networks:
+      - homelab_frontend
+
+networks:
+  homelab_frontend:
+    external: true

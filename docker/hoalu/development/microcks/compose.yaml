@@ -1,0 +1,19 @@
+services:
+  microcks:
+    image: quay.io/microcks/microcks-uber:latest-native
+    container_name: microcks-uber
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: homelab_frontend
+      traefik.http.routers.microcks.rule: "Host(`${MICROCKS_DOMAIN:-microcks.internal}`)"
+      traefik.http.routers.microcks.entrypoints: websecure
+      traefik.http.routers.microcks.tls: "true"
+      traefik.http.routers.microcks.tls.certresolver: stepca
+      traefik.http.services.microcks.loadbalancer.server.port: "8080"
+    networks:
+      - homelab_frontend
+
+networks:
+  homelab_frontend:
+    external: true

@@ -1,0 +1,5 @@
+services:
+  devtools:
+    build: .
+    image: devtools:desktop
+    profiles: ["build"]

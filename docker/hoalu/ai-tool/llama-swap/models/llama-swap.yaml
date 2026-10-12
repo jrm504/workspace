@@ -1,0 +1,61 @@
+healthCheckTimeout: 120
+apiKeys:
+  - "${env.LLAMA_SWAP_API_KEY}"
+security:
+  cors:
+    allowedOrigins:
+      - "https://litellm.internal"
+      # - "*"
+
+models:
+  "qwen3-8b":
+    cmd: >
+      llama-server
+      --port ${PORT}
+      --host 127.0.0.1
+      -m /models/Qwen3-8B-Q4_K_M.gguf
+      -ngl 99
+      -c 8192
+      --flash-attn on
+    ttl: 300
+
+  "qwen3-embedding-0.6b":
+    cmd: >
+      llama-server
+      --port ${PORT}
+      --host 127.0.0.1
+      -m /models/Qwen3-Embedding-0.6B-Q8_0.gguf
+      --embedding
+      --pooling last
+      -ngl 99
+      -c 8192
+      -ub 8192
+    ttl: 0
+
+  "qwen3-reranker-0.6b":
+    cmd: >
+      llama-server
+      --port ${PORT}
+      --host 127.0.0.1
+      -m /models/qwen3-reranker-0.6b-q8_0.gguf
+      --reranking
+      --batch-size 1024
+      --ubatch-size 1024
+      -ngl 99
+      -c 4096
+    ttl: 0
+
+groups:
+  "chat":
+    swap: true
+    exclusive: false
+    members:
+      - "qwen3-8b"
+
+  "rag":
+    swap: false
+    exclusive: false
+    persistent: true
+    members:
+      - "qwen3-embedding-0.6b"
+      - "qwen3-reranker-0.6b"

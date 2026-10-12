@@ -1,0 +1,101 @@
+services:
+  db:
+    image: google/alloydbomni:${HINDSIGHT_DB_VERSION:-17}
+    container_name: hindsight-db-alloydb
+    restart: always
+    environment:
+      POSTGRES_USER: ${HINDSIGHT_DB_USER:-hindsight_user}
+      POSTGRES_PASSWORD: ${HINDSIGHT_DB_PASSWORD}
+      POSTGRES_DB: ${HINDSIGHT_DB_NAME}
+    volumes:
+      - alloydb_data:/var/lib/postgresql/data
+    networks:
+      - hindsight-net
+
+  alloydb-init:
+    image: google/alloydbomni:${HINDSIGHT_DB_VERSION:-17}
+    depends_on:
+      - db
+    environment:
+      - PGPASSWORD=${HINDSIGHT_DB_PASSWORD}
+    command:
+      - bash
+      - -c
+      - |
+        echo 'Waiting for AlloyDB Omni to be ready...'
+        until pg_isready -h hindsight-db-alloydb -p 5432 -U ${HINDSIGHT_DB_USER:-hindsight_user}; do
+          echo 'AlloyDB Omni is unavailable - sleeping'
+          sleep 2
+        done
+        echo 'AlloyDB Omni is ready - creating ${HINDSIGHT_DB_NAME} database'
+        psql -h hindsight-db-alloydb -p 5432 -U ${HINDSIGHT_DB_USER:-hindsight_user} -c 'CREATE DATABASE ${HINDSIGHT_DB_NAME};' 2>/dev/null || echo 'Database already exists'
+        echo 'Creating vector and alloydb_scann extensions'
+        psql -h hindsight-db-alloydb -p 5432 -U ${HINDSIGHT_DB_USER:-hindsight_user} -d ${HINDSIGHT_DB_NAME} -c 'CREATE EXTENSION IF NOT EXISTS vector;'
+        psql -h hindsight-db-alloydb -p 5432 -U ${HINDSIGHT_DB_USER:-hindsight_user} -d ${HINDSIGHT_DB_NAME} -c 'CREATE EXTENSION IF NOT EXISTS alloydb_scann CASCADE;'
+        echo 'Database and extensions created successfully'
+    restart: "no"
+    networks:
+      - hindsight-net
+
+  hindsight:
+    image: ghcr.io/vectorize-io/hindsight:latest
+    container_name: hindsight
+    restart: unless-stopped
+    volumes:
+      - './certs/internal-rootca-bundle.crt:/usr/local/share/ca-certificates/internal-rootca-bundle.crt:ro'
+    environment:
+      - HINDSIGHT_API_WORKER_ID=hindsight
+      - HINDSIGHT_API_LLM_PROVIDER=openai-responses
+      - HINDSIGHT_API_LLM_BASE_URL=https://litellm.internal/v1
+      - HINDSIGHT_API_LLM_API_KEY=${HINDSIGHT_API_LLM_API_KEY}
+      - HINDSIGHT_API_LLM_MODEL=${HINDSIGHT_API_LLM_MODEL}
+      - HINDSIGHT_CP_ACCESS_KEY=${HINDSIGHT_CP_ACCESS_KEY:?HINDSIGHT_CP_ACCESS_KEY is required}
+      - HINDSIGHT_CP_DATAPLANE_API_KEY=${HINDSIGHT_API_KEY} # HINDSIGHT_API_KEY
+      - HINDSIGHT_API_TENANT_API_KEY=${HINDSIGHT_API_KEY} # HINDSIGHT_API_KEY
+      - HINDSIGHT_API_TENANT_EXTENSION=hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension
+      # Vector database: pgvector -> alloydb (issue )
+      - HINDSIGHT_API_DATABASE_URL=postgresql://${HINDSIGHT_DB_USER:-hindsight_user}:${HINDSIGHT_DB_PASSWORD}@db:5432/${HINDSIGHT_DB_NAME}
+      - HINDSIGHT_API_VECTOR_EXTENSION=scann
+      - HINDSIGHT_API_TEXT_SEARCH_EXTENSION=native
+
+      # --- External Embedding (llama-swap via LiteLLM) ---
+      - HINDSIGHT_API_EMBEDDINGS_PROVIDER=openai
+      - HINDSIGHT_API_EMBEDDINGS_OPENAI_BASE_URL=https://litellm.internal/v1
+      - HINDSIGHT_API_EMBEDDINGS_OPENAI_API_KEY=${HINDSIGHT_API_LLM_API_KEY}
+      - HINDSIGHT_API_EMBEDDINGS_OPENAI_MODEL=${HINDSIGHT_API_EMBEDDINGS_OPENAI_MODEL:-qwen3-embedding-0.6b}
+      - HINDSIGHT_API_EMBEDDINGS_OPENAI_BATCH_SIZE=32
+
+      # # --- External Reranker (llama-swap via LiteLLM) ---
+      - HINDSIGHT_API_RERANKER_PROVIDER=litellm
+      - HINDSIGHT_API_LITELLM_API_BASE=https://litellm.internal
+      - HINDSIGHT_API_RERANKER_LITELLM_API_KEY=${HINDSIGHT_API_LLM_API_KEY}
+      - HINDSIGHT_API_RERANKER_LITELLM_MODEL=${HINDSIGHT_API_RERANKER_LITELLM_MODEL}
+
+      - SSL_CERT_FILE=/usr/local/share/ca-certificates/internal-rootca-bundle.crt
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: homelab_frontend
+      traefik.http.routers.hindsight.rule: "Host(`${HINDSIGHT_DOMAIN:-hindsight.internal}`)"
+      traefik.http.routers.hindsight.entrypoints: websecure
+      traefik.http.routers.hindsight.tls: "true"
+      traefik.http.routers.hindsight.tls.certresolver: stepca
+      traefik.http.services.hindsight.loadbalancer.server.port: "9999"
+    depends_on:
+      db:
+        condition: service_started
+      alloydb-init:
+        condition: service_completed_successfully
+    networks:
+      - hindsight-net
+      - homelab_frontend
+
+networks:
+  hindsight-net:
+  homelab_frontend:
+    external: true
+volumes:
+  alloydb_data:
+    name: hindsight-alloydb_data
+  hindsight-data:
+    name: hindsight-data
+    

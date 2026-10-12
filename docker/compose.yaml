@@ -1,0 +1,28 @@
+name: hoalu
+
+include:
+  # Core build
+  - ./development/devtools/compose.yaml
+  - ./development/llama-swap/compose.yaml
+  - ./development/microcks/compose.yaml
+
+  # Networking
+  - ./networking/traefik/compose.yaml
+
+  # Database
+  - ./database/compose.yaml
+
+  # AI  Tools
+  - ./ai-tool/litellm/compose.yaml
+  - ./ai-tool/llama-swap/compose.yaml
+  # - ./ai-tool/jupyter/compose.yaml
+
+  # AI Agents
+  - ./ai-agent/hermes/compose.yaml
+  - ./ai-agent/codex/compose.yaml
+  - ./ai-agent/opencode/compose.yaml
+  - ./ai-agent/omp/compose.yaml
+
+volumes:
+  mise:
+    name: mise_data

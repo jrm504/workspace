@@ -1,0 +1,49 @@
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:v3.7.12
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      LEGO_CA_CERTIFICATES: /certs/internal-rootca.crt
+    command:
+      - "--api.dashboard=false"
+      - "--ping=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--certificatesresolvers.stepca.acme.caserver=https://ca.internal/acme/acme@email.internal/directory"
+      - "--certificatesresolvers.stepca.acme.email=${ACME_EMAIL:?ACME_EMAIL is required}"
+      - "--certificatesresolvers.stepca.acme.storage=/acme/acme.json"
+      - "--certificatesresolvers.stepca.acme.certificatesduration=24"
+      - "--certificatesresolvers.stepca.acme.httpchallenge=true"
+      - "--certificatesresolvers.stepca.acme.httpchallenge.entrypoint=web"
+      - "--accesslog=true"
+      - "--log.level=INFO"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_acme:/acme
+      - ./certs/internal-rootca.crt:/certs/internal-rootca.crt:ro
+    networks:
+      - frontend
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  traefik_acme:
+
+networks:
+  frontend:
+  backend:
+    internal: true

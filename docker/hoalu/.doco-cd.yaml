@@ -1,0 +1,11 @@
+---
+working_dir: ./docker/hoalu
+auto_discovery:
+  enabled: true
+  depth: 1
+  delete: true
+# external_secrets:
+force_recreate: false
+reconciliation:
+  enabled: true
+  interval: 3600

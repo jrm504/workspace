@@ -1,0 +1,25 @@
+services:
+  omp:
+    image: devtools:desktop
+    container_name: omp
+    profiles: ["coding-agent"]
+    environment:
+      - LITELLM_BASE_URL=${LITELLM_BASE_URL}
+      - LITELLM_API_KEY=${LITELLM_API_KEY_OMP}
+      - GIT_AUTHOR_NAME=${GIT_AUTHOR_NAME}
+      - GIT_AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL}
+      - GIT_COMMITTER_NAME=${GIT_COMMITTER_NAME}
+      - GIT_COMMITTER_EMAIL=${GIT_COMMITTER_EMAIL}
+    volumes:
+      - mise:/mise
+      - omp_data:/root/.omp
+      - ${WORKSPACE_DIR:?required}:${WORKSPACE_DIR}
+    working_dir: ${WORKSPACE_DIR}
+    command: ["sleep", "infinity"]
+
+volumes:
+  mise:
+    external: true
+    name: mise_data
+  omp_data:
+    name: omp_data

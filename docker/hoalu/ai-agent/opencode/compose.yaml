@@ -1,0 +1,32 @@
+name: opencode
+services:
+  opencode:
+    image: devtools:desktop
+    container_name: opencode
+    profiles: ["coding-agent"]
+    volumes:
+      - mise:/mise
+      - ${WORKSPACE_DIR:?required}:${WORKSPACE_DIR}
+      - opencode_data:/opencode-data
+      - ./opencode.jsonc:/opencode-data/opencode.jsonc
+    working_dir: ${WORKSPACE_DIR}
+    environment:
+      - OPENCODE_CONFIG=/opencode-data/opencode.jsonc
+      - XDG_CACHE_HOME=/opencode-data/cache
+      - XDG_DATA_HOME=/opencode-data/data
+      - XDG_STATE_HOME=/opencode-data/state
+      - LITELLM_BASE_URL=${LITELLM_BASE_URL}
+      - LITELLM_API_KEY=${LITELLM_API_KEY_OPENCODE}
+      - GIT_AUTHOR_NAME=${GIT_AUTHOR_NAME}
+      - GIT_AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL}
+      - GIT_COMMITTER_NAME=${GIT_COMMITTER_NAME}
+      - GIT_COMMITTER_EMAIL=${GIT_COMMITTER_EMAIL}
+      - PATH='/mise/data/shims:$PATH'
+    command: ["sleep", "infinity"]
+
+volumes:
+  mise:
+    external: true
+    name: mise_data
+  opencode_data:
+    name: opencode_data

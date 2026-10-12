@@ -1,0 +1,66 @@
+services:
+  hermes:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: hermes-agent:desktop
+    container_name: hermes
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:9119:9119"
+    # tmpfs:
+    #   - ./profiles/developer/bot-desktop:rw,exec,mode=1777
+    volumes:
+      
+      - /var/run/docker.sock:/var/run/docker.sock
+      # IMPORTANT:
+      # Hermes generates sandbox mounts from paths that are also visible to the Docker host.
+      - ${WORKSPACE_DIR:?required}:${WORKSPACE_DIR}
+      - ${HERMES_DATA_DIR:?required}:${HERMES_DATA_DIR}
+      # Shared volume for mise data, config, and cache
+      - mise:/mise
+
+    environment:
+      - MISE_DATA_DIR=/mise/data
+      - MISE_CONFIG_DIR=/mise/config
+      - MISE_CACHE_DIR=/mise/cache
+      - MISE_GLOBAL_CONFIG_FILE=/mise/config/config.toml
+      - MISE_TRUSTED_CONFIG_PATHS=/mise/config
+
+      - HERMES_UID=${HERMES_UID:-10000}
+      - HERMES_GID=${HERMES_GID:-10000}
+
+
+      - HERMES_HOME=${HERMES_DATA_DIR}
+
+      # Dashboard supervised by s6
+      - HERMES_DASHBOARD=1
+      - HERMES_DASHBOARD_HOST=0.0.0.0
+      - HERMES_DASHBOARD_PORT=9119
+
+      - HERMES_DASHBOARD_BASIC_AUTH_USERNAME=${HERMES_DASHBOARD_BASIC_AUTH_USERNAME}
+      - HERMES_DASHBOARD_BASIC_AUTH_PASSWORD_HASH=${HERMES_DASHBOARD_BASIC_AUTH_PASSWORD_HASH}
+      - HERMES_DASHBOARD_BASIC_AUTH_SECRET=${HERMES_DASHBOARD_BASIC_AUTH_SECRET}
+
+
+      - HERMES_WRITE_SAFE_ROOT=${WORKSPACE_DIR}
+
+      - HINDSIGHT_API_URL=${HINDSIGHT_API_URL}
+      - HINDSIGHT_API_KEY=${HINDSIGHT_API_KEY}
+
+    command: ["gateway", "run"]
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: homelab_frontend
+      traefik.http.routers.hermes.rule: "Host(`${HERMES:-hermes.internal}`)"
+      traefik.http.routers.hermes.entrypoints: websecure
+      traefik.http.routers.hermes.tls: "true"
+      traefik.http.routers.hermes.tls.certresolver: stepca
+      traefik.http.services.hermes.loadbalancer.server.port: "9119"
+
+volumes:
+  mise:
+    external: true
+    name: mise_data

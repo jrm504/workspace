@@ -1,0 +1,121 @@
+services:
+  litellm:
+    image: docker.litellm.ai/berriai/litellm-database@sha256:c1909418aea76c798222f701ccd27a1b963d8cf713f797fa072fd222a6a774a4 # v1.104.3
+    restart: unless-stopped
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
+      LITELLM_SALT_KEY: ${LITELLM_SALT_KEY:?LITELLM_SALT_KEY is required}
+      DATABASE_URL: postgresql://litellm:${LITELLM_POSTGRES_PASSWORD:?LITELLM_POSTGRES_PASSWORD is required}@db:5432/litellm
+      STORE_MODEL_IN_DB: "True"
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${LITELLM_REDIS_PASSWORD:?LITELLM_REDIS_PASSWORD is required}
+      CHATGPT_TOKEN_DIR: /data/chatgpt
+      CHATGPT_AUTH_FILE: auth.json
+      PRESIDIO_ANALYZER_API_BASE: http://presidio-analyzer:3000
+      PRESIDIO_ANONYMIZER_API_BASE: http://presidio-anonymizer:3000
+      LITELLM_LOG: ${LITELLM_LOG:-ERROR}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        apk add --no-cache uv
+        exec litellm \
+          --config /app/config.yaml \
+          --port 4000
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - litellm_chatgpt_auth:/data/chatgpt
+    networks:
+      - frontend
+      - backend
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: litellm_frontend
+      traefik.http.routers.litellm.rule: "Host(`${LITELLM_DOMAIN:-litellm.internal}`)"
+      traefik.http.routers.litellm.entrypoints: websecure
+      traefik.http.routers.litellm.tls: "true"
+      traefik.http.routers.litellm.tls.certresolver: stepca
+      traefik.http.services.litellm.loadbalancer.server.port: "4000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import urllib.request;
+          urllib.request.urlopen(
+          'http://127.0.0.1:4000/health/readiness',
+          timeout=5)
+      interval: 10s
+      timeout: 6s
+      start_period: 120s
+      retries: 6
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: litellm
+      LITELLM_POSTGRES_PASSWORD: ${LITELLM_POSTGRES_PASSWORD:?LITELLM_POSTGRES_PASSWORD is required}
+      POSTGRES_DB: litellm
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm -d litellm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  redis:
+    image: redis:7.4.11-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${LITELLM_REDIS_PASSWORD:?LITELLM_REDIS_PASSWORD is required}
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --requirepass
+      - ${LITELLM_REDIS_PASSWORD:?LITELLM_REDIS_PASSWORD is required}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'redis-cli --no-auth-warning -a "$${REDIS_PASSWORD}" ping | grep -q PONG'
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+
+  presidio-analyzer:
+    image: mcr.microsoft.com/presidio-analyzer:latest
+    restart: unless-stopped
+    networks:
+      - backend
+
+  presidio-anonymizer:
+    image: mcr.microsoft.com/presidio-anonymizer:latest
+    restart: unless-stopped
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:
+  traefik_acme:
+  litellm_chatgpt_auth:
+
+networks:
+  backend:
+    internal: true

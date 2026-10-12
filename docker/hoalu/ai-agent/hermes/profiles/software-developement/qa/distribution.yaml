@@ -1,0 +1,14 @@
+name: qa
+version: 0.1.0
+description: Quality Assurance engineer. Independently verifies functional behavior,
+  acceptance criteria, regressions, edge cases, integration behavior, and contract
+  compliance. Focuses on whether the software behaves correctly. Does not implement
+  production code or approve code quality.
+hermes_requires: ">=0.12.0"
+author: "Hoalulab"
+license: "MIT"
+
+env_requires:
+  - name: HERMES_CUSTOM_LITELLM_API_KEY
+    description: "LiteLLM API key (for model access)"
+    required: true

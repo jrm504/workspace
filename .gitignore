@@ -149,11 +149,16 @@ activemq-data/
 
 # Environments
 .env
+.env.*
 .envrc
 .venv
 env/
 venv/
 ENV/
+*.key
+*.pem
+*.p12
+*.pfx
 env.bak/
 venv.bak/
 
@@ -216,3 +221,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+!.env.example
+.agent/
