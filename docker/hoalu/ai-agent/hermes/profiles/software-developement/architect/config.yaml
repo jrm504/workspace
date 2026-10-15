@@ -7,17 +7,17 @@ providers:
   litellm:
     name: LiteLLM
     base_url: https://litellm.internal/v1
-    model: gpt-5.6-luna
+    model: coding
     discover_models: true
     models:
-      gpt-5.6-luna: {}
-    ssl_ca_cert: ${HOME}/certs/internal-rootca.crt
+      coding: {}
+    # ssl_ca_cert: ${HOME}/certs/internal-rootca.crt
     key_env: HERMES_CUSTOM_LITELLM_API_KEY
 agent:
   reasoning_effort: high
 terminal:
   backend: docker
-  cwd: /work
+  cwd: /opt/workspace
   timeout: 180
   home_mode: auto
   container_cpu: 1
@@ -25,8 +25,8 @@ terminal:
   container_disk: 51200
   container_persistent: true
   docker_volumes:
-    - ${HOME}/work:/work
-    - ${HOME}/work:${HOME}/work
+    - mise_data:/mise
+    - /opt/hermes-work:/opt/hermes-work
   docker_mount_cwd_to_workspace: true
   persistent_shell: true
   lifetime_seconds: 300
@@ -35,34 +35,34 @@ auxiliary:
     - litellm.internal
   vision:
     provider: litellm
-    model: gpt-5.6-luna
+    model: coding
     reasoning_effort: none
   compression:
     provider: litellm
-    model: gpt-5.6-luna
+    model: coding
     reasoning_effort: low
   skills_hub:
     provider: litellm
-    model: gpt-5.6-luna
+    model: coding
     reasoning_effort: low
   approval:
     provider: litellm
-    model: gpt-5.6-luna
+    model: coding
     reasoning_effort: none
   review:
     provider: litellm
-    model: gpt-5.6-luna
+    model: coding
     reasoning_effort: low
   mcp:
     provider: litellm
-    model: gpt-5.6-luna
+    model: coding
     reasoning_effort: low
   title_generation:
     provider: litellm
-    model: gpt-5.6-luna
+    model: coding
   curator:
     provider: litellm
-    model: gpt-5.6-luna
+    model: coding
     reasoning_effort: low
 plugins:
   enabled: []
@@ -75,15 +75,7 @@ memory:
   nudge_interval: 10
   provider: hindsight
   flush_min_turns: 6
-  mnemosyne:
-    auto_sleep: 'True'
-    default_scope: global
-    reflect: '{''disabled_for_cron'': True, ''max_calls_per_session'': 3}'
-    shared_surface_path: ${HOME}/.hermes/mnemosyne/data/mnemosyne.db
-    skip_contexts: cron,flush,subagent,background,skill_loop
-    sleep_threshold: '50'
-    sync_roles: '[''user'']'
-    vector_type: int8
+
 streaming:
   enabled: false
 _config_version: 40

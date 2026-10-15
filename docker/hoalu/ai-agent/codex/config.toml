@@ -1,4 +1,4 @@
-model = "gpt-6-luna"
+model = "coding"
 model_provider = "litellm"
 model_reasoning_effort = "medium"
 
