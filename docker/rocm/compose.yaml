@@ -1,0 +1,8 @@
+
+name: rocm
+# GFX1030
+
+include:
+  - ./traefik/compose.yaml
+  - ./llama-swap/compose.yaml
+  - ./jupyter/compose.yaml
