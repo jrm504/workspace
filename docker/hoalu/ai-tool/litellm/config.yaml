@@ -1,0 +1,244 @@
+model_list:
+  - model_name: gpt-6-astra
+    model_info:
+      mode: responses
+      max_input_tokens: 922000
+      max_output_tokens: 128000
+    litellm_params:
+      model: chatgpt/gpt-6-astra
+  - model_name: gpt-6.1-sol
+    model_info:
+      mode: responses
+      max_input_tokens: 922000
+      max_output_tokens: 128000
+    litellm_params:
+      model: chatgpt/gpt-6.1-sol
+  - model_name: gpt-6-luna
+    model_info:
+      mode: responses
+      max_input_tokens: 922000
+      max_output_tokens: 128000
+    litellm_params:
+      model: chatgpt/gpt-6-luna
+
+  - model_name: glm-5.3
+    model_info:
+      max_input_tokens: 200000
+      max_output_tokens: 128000
+    litellm_params:
+      model: zai/glm-5.3
+      api_key: os.environ/ZAI_API_KEY
+
+  - model_name: minimax/minimax-m3
+    model_info:
+      mode: chat
+      max_input_tokens: 1048576
+      max_output_tokens: 262144
+    litellm_params:
+      model: openrouter/minimax/minimax-m3
+      api_key: os.environ/OPENROUTER_API_KEY
+      api_base: https://openrouter.ai/api/v1
+
+  - model_name: jina/jina-embeddings-v5-omni-small
+    model_info:
+      mode: embedding
+      max_input_tokens: 32768
+    litellm_params:
+      model: jina_ai/jina-embeddings-v5-omni-small
+      api_key: os.environ/JINA_AI_API_KEY
+      api_base: https://api.jina.ai/v1
+
+  ## LLAMA SWAP
+  - model_name: qwen3-embedding-0.6b
+    model_info:
+      mode: embedding
+      max_input_tokens: 32768
+    litellm_params:
+      model: hosted_vllm/qwen3-embedding-0.6b
+      api_base: os.environ/LLAMA_SWAP_BASE_URL
+      api_key: os.environ/LLAMA_SWAP_API_KEY
+  - model_name: qwen3-reranker-0.6b
+    model_info:
+      mode: rerank
+      max_input_tokens: 32768
+    litellm_params:
+      model: hosted_vllm/qwen3-reranker-0.6b
+      api_base: os.environ/LLAMA_SWAP_BASE_URL
+      api_key: os.environ/LLAMA_SWAP_API_KEY
+
+  ## OPENCODE
+  - model_name: opencode/hy4-preview
+    litellm_params:
+      model: openai/hy4-preview
+      api_base: https://opencode.ai/zen/go/v1
+      api_key: os.environ/OPENCODE_API_KEY
+      drop_params: true
+      use_chat_completions_api: true
+      extra_headers:
+        x-opencode-session: litellm
+  - model_name: opencode/gpt-6-luna
+    litellm_params:
+      model: openai/gpt-5.6-luna
+      api_base: https://opencode.ai/zen/go/v1
+      api_key: os.environ/OPENCODE_API_KEY
+      drop_params: true
+      use_chat_completions_api: true
+      extra_headers:
+        x-opencode-session: litellm
+  - model_name: opencode/grok-4.7
+    litellm_params:
+      model: openai/grok-4.7
+      api_base: https://opencode.ai/zen/go/v1
+      api_key: os.environ/OPENCODE_API_KEY
+      drop_params: true
+      use_chat_completions_api: true
+      extra_headers:
+        x-opencode-session: litellm
+  - model_name: opencode/glm-5.3
+    litellm_params:
+      model: openai/glm-5.3
+      api_base: https://opencode.ai/zen/go/v1
+      api_key: os.environ/OPENCODE_API_KEY
+      drop_params: true
+      use_chat_completions_api: true
+      extra_headers:
+        x-opencode-session: litellm
+  - model_name: opencode/kimi-k3
+    litellm_params:
+      model: openai/kimi-k3
+      api_base: https://opencode.ai/zen/go/v1
+      api_key: os.environ/OPENCODE_API_KEY
+      drop_params: true
+      use_chat_completions_api: true
+      extra_headers:
+        x-opencode-session: litellm
+  - model_name: opencode/deepseek-v4.1-flash
+    litellm_params:
+      model: openai/deepseek-v4.1-flash
+      api_base: https://opencode.ai/zen/go/v1
+      api_key: os.environ/OPENCODE_API_KEY
+      drop_params: true
+      use_chat_completions_api: true
+      extra_headers:
+        x-opencode-session: litellm
+
+  ## OPENROUTER
+  - model_name: openrouter/gpt-6-luna
+    litellm_params:
+      model: openrouter/openai/gpt-6-luna
+      api_key: os.environ/OPENROUTER_API_KEY
+      extra_body:
+        provider:
+          only:
+            - openai/flex
+          allow_fallbacks: false
+        reasoning:
+          enabled: true
+  - model_name: openrouter/gemini-3.8-flash
+    litellm_params:
+      model: openrouter/google/gemini-3.8-flash
+      api_key: os.environ/OPENROUTER_API_KEY
+      use_chat_completions_api: true
+      reasoning:
+        effort: high
+      extra_body:
+        provider:
+          only:
+            - google-ai-studio/flex
+          allow_fallbacks: false
+  - model_name: openrouter/deepseek-v4.1-flash
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4.1-flash
+      api_key: os.environ/OPENROUTER_API_KEY
+      use_chat_completions_api: true
+      extra_body:
+        provider:
+          only:
+            - together
+          allow_fallbacks: false
+        reasoning:
+          enabled: true
+  - model_name: openrouter/google/gemini-embedding-2
+    litellm_params:
+      model: openrouter/google/gemini-embedding-2
+      api_key: os.environ/OPENROUTER_API_KEY
+  - model_name: openrouter/openrouter/free
+    model_info:
+      mode: chat
+      max_input_tokens: 200000
+      max_output_tokens: 200000
+    litellm_params:
+      model: openrouter/openrouter/free
+      api_key: os.environ/OPENROUTER_API_KEY
+      api_base: https://openrouter.ai/api/v1
+  - model_name: openrouter/jev-1.14
+    litellm_params:
+      model: openrouter/typesafe/jev-1.14
+      api_key: os.environ/OPENROUTER_API_KEY
+  - model_name: openrouter/jev-router
+    model_info:
+      mode: chat
+      max_input_tokens: 1000000
+    litellm_params:
+      model: openrouter/typesafe/jev-router
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  ## CUSTOM
+  - model_name: chatgpt
+    litellm_params:
+      model: auto_router/complexity_router
+      complexity_router_config:
+        tiers:
+          SIMPLE: gpt-6-luna
+          MEDIUM: gpt-6-luna
+          COMPLEX: gpt-6.1-sol
+          REASONING: gpt-6-astra
+      complexity_router_default_model: gpt-6-luna
+
+  - model_name: open-weight
+    litellm_params:
+      model: auto_router/complexity_router
+      complexity_router_config:
+        tiers:
+          SIMPLE: deepseek-v4.1-flash
+          MEDIUM: glm-5.3
+          COMPLEX: kimi-k3
+          REASONING: qwen3.8-max
+      complexity_router_default_model: deepseek-v4.1-flash
+
+general_settings:
+  use_x_forwarded_for: true
+  master_key: os.environ/LITELLM_MASTER_KEY
+  # disable_env_credential_login: true # Disable the master key login.
+  # It is recommended to enable this setting after creating one administrator account.
+  store_model_in_db: true
+  store_prompts_in_spend_logs: true
+  user_api_key_cache_ttl: 300
+  forward_client_headers_to_llm_api: false
+
+router_settings:
+  routing_strategy: simple-shuffle
+  redis_host: os.environ/REDIS_HOST
+  redis_port: os.environ/REDIS_PORT
+  redis_password: os.environ/REDIS_PASSWORD
+
+  fallbacks:
+    - gpt-6-astra: ["opencode/gpt-6-astra", "openrouter/gpt-6-astra"]
+    - gpt-6.1-sol: ["opencode/gpt-6.1-sol", "openrouter/gpt-6.1-sol"]
+    - gpt-6-luna: ["opencode/gpt-6-luna", "openrouter/gpt-6-luna"]
+    - deepseek-v4.1-flash:
+        ["opencode/deepseek-v4.1-flash", "openrouter/deepseek-v4.1-flash"]
+    - kimi-k3: ["opencode/kimi-k3", "openrouter/kimi-k3"]
+    - glm-5.3: ["opencode/glm-5.3", "openrouter/glm-5.3"]
+    - qwen3.8-max: ["opencode/qwen3.8-max", "openrouter/qwen3.8-max"]
+
+litellm_settings:
+  drop_params: true
+  cache: true
+  enable_redis_auth_cache: true
+  cache_params:
+    type: redis
+    host: os.environ/REDIS_HOST
+    port: os.environ/REDIS_PORT
+    password: os.environ/REDIS_PASSWORD
+    namespace: litellm
