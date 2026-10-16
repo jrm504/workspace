@@ -216,6 +216,18 @@ general_settings:
   user_api_key_cache_ttl: 300
   forward_client_headers_to_llm_api: false
 
+guardrails:
+  - guardrail_name: "presidio-pii"
+    litellm_params:
+      guardrail: presidio
+      mode: "pre_call"
+      default_on: false
+      presidio_language: "en"
+      presidio_analyzer_api_base: os.environ/PRESIDIO_ANALYZER_API_BASE
+      presidio_anonymizer_api_base: os.environ/PRESIDIO_ANONYMIZER_API_BASE
+      output_parse_pii: true
+      presidio_filter_scope: both
+
 router_settings:
   routing_strategy: simple-shuffle
   redis_host: os.environ/REDIS_HOST
