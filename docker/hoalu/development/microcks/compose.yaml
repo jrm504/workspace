@@ -1,6 +1,6 @@
 services:
   microcks:
-    image: quay.io/microcks/microcks-uber:latest-native
+    image: quay.io/microcks/microcks-uber:latest-native@sha256:c0daa6b10aefccb68341828dc98d9fd540f8fd5aa4485ed41c2f428582593d91
     container_name: microcks-uber
     restart: unless-stopped
     labels:

@@ -1,6 +1,6 @@
-FROM nousresearch/hermes-sandbox:desktop
+FROM nousresearch/hermes-sandbox:v0.21.7-desktop@sha256:c7d8607d076f26a64e0bd6828f74e1764af43fe3281368188459bb693bfa7567
 
-COPY --from=ghcr.io/jdx/mise:2026.9.11 /usr/local/bin/mise /usr/local/bin/mise
+COPY --from=ghcr.io/jdx/mise:2026.10.18@sha256:fc31de7b93d195613deb600d42c65a164b0205716ade38132aadeabac3838248 /usr/local/bin/mise /usr/local/bin/mise
 
 ENV MISE_DATA_DIR=/mise/data \
     MISE_CONFIG_DIR=/mise/config \

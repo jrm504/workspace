@@ -5,4 +5,4 @@ name: rocm
 include:
   - ./traefik/compose.yaml
   - ./llama-swap/compose.yaml
-  - ./jupyter/compose.yaml
+  # - ./jupyter/compose.yaml

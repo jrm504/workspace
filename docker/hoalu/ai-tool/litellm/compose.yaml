@@ -1,6 +1,6 @@
 services:
   litellm:
-    image: docker.litellm.ai/berriai/litellm-database@sha256:c1909418aea76c798222f701ccd27a1b963d8cf713f797fa072fd222a6a774a4 # v1.104.3
+    image: docker.litellm.ai/berriai/litellm-non_root:v1.106.2@sha256:07fabea33dfc2b127e865c03112dfc76936334b29028ec05cdd355af2385dc04
     restart: unless-stopped
     environment:
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
@@ -20,15 +20,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    entrypoint:
-      - /bin/sh
-      - -c
-    command:
-      - |
-        apk add --no-cache uv
-        exec litellm \
-          --config /app/config.yaml \
-          --port 4000
+    command: [ "--config",  "/app/config.yaml", "--port", "4000"]
     volumes:
       - ./config.yaml:/app/config.yaml:ro
       - litellm_chatgpt_auth:/data/chatgpt
@@ -59,7 +51,7 @@ services:
       retries: 6
 
   db:
-    image: postgres:16
+    image: postgres:16.15@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97
     restart: unless-stopped
     environment:
       POSTGRES_USER: litellm
@@ -76,7 +68,7 @@ services:
       - backend
 
   redis:
-    image: redis:7.4.11-alpine
+    image: redis:8.8.3-alpine@sha256:f61bc3826f4a37a6ba8ca50ee75e3525709b01779d8e468233e6d238119aed72
     restart: unless-stopped
     environment:
       REDIS_PASSWORD: ${LITELLM_REDIS_PASSWORD:?LITELLM_REDIS_PASSWORD is required}
@@ -99,13 +91,13 @@ services:
       - backend
 
   presidio-analyzer:
-    image: mcr.microsoft.com/presidio-analyzer:latest
+    image: mcr.microsoft.com/presidio-analyzer:2.2.364@sha256:ae8f6f111ac2f04e3fec552f7f80edd0dcbfa2dd69ee1b9e030475be31669885
     restart: unless-stopped
     networks:
       - backend
 
   presidio-anonymizer:
-    image: mcr.microsoft.com/presidio-anonymizer:latest
+    image: mcr.microsoft.com/presidio-anonymizer:2.2.364@sha256:e567013893ebc80994e3799f6f55c86aa1f0b0fadb779571ab346f0ec45365c1
     restart: unless-stopped
     networks:
       - backend

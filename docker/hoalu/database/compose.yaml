@@ -1,6 +1,6 @@
 services:
   db:
-    image: google/alloydbomni:${HINDSIGHT_DB_VERSION:-17}
+    image: google/alloydbomni:16.14.0@sha256:6f9f2a87354dac2eed5e3a84fb1e6ccfce0429d4176623a3396a6012e6fc5e47
     container_name: hindsight-db-alloydb
     restart: always
     environment:
@@ -13,7 +13,7 @@ services:
       - hindsight-net
 
   alloydb-init:
-    image: google/alloydbomni:${HINDSIGHT_DB_VERSION:-17}
+    image: google/alloydbomni:16.14.0@sha256:6f9f2a87354dac2eed5e3a84fb1e6ccfce0429d4176623a3396a6012e6fc5e47
     depends_on:
       - db
     environment:
@@ -38,7 +38,7 @@ services:
       - hindsight-net
 
   hindsight:
-    image: ghcr.io/vectorize-io/hindsight:latest
+    image: ghcr.io/vectorize-io/hindsight:1.1.0@sha256:50311d02b4d5d2b7c5242bd336edf8735df8374eaad496a92f49c83b37d2aa06
     container_name: hindsight
     restart: unless-stopped
     volumes:
@@ -46,7 +46,7 @@ services:
     environment:
       - HINDSIGHT_API_WORKER_ID=hindsight
       - HINDSIGHT_API_LLM_PROVIDER=openai-responses
-      - HINDSIGHT_API_LLM_BASE_URL=https://litellm.internal/v1
+      - HINDSIGHT_API_LLM_BASE_URL=${LITELLM_API_BASE_URL:-https://litellm.internal/v1}
       - HINDSIGHT_API_LLM_API_KEY=${HINDSIGHT_API_LLM_API_KEY}
       - HINDSIGHT_API_LLM_MODEL=${HINDSIGHT_API_LLM_MODEL}
       - HINDSIGHT_CP_ACCESS_KEY=${HINDSIGHT_CP_ACCESS_KEY:?HINDSIGHT_CP_ACCESS_KEY is required}
@@ -60,14 +60,14 @@ services:
 
       # --- External Embedding (llama-swap via LiteLLM) ---
       - HINDSIGHT_API_EMBEDDINGS_PROVIDER=openai
-      - HINDSIGHT_API_EMBEDDINGS_OPENAI_BASE_URL=https://litellm.internal/v1
+      - HINDSIGHT_API_EMBEDDINGS_OPENAI_BASE_URL=${LITELLM_API_BASE_URL:-https://litellm.internal/v1}
       - HINDSIGHT_API_EMBEDDINGS_OPENAI_API_KEY=${HINDSIGHT_API_LLM_API_KEY}
       - HINDSIGHT_API_EMBEDDINGS_OPENAI_MODEL=${HINDSIGHT_API_EMBEDDINGS_OPENAI_MODEL:-qwen3-embedding-0.6b}
       - HINDSIGHT_API_EMBEDDINGS_OPENAI_BATCH_SIZE=32
 
       # # --- External Reranker (llama-swap via LiteLLM) ---
       - HINDSIGHT_API_RERANKER_PROVIDER=litellm
-      - HINDSIGHT_API_LITELLM_API_BASE=https://litellm.internal
+      - HINDSIGHT_API_LITELLM_API_BASE=${LITELLM_API_BASE_URL:-https://litellm.internal}
       - HINDSIGHT_API_RERANKER_LITELLM_API_KEY=${HINDSIGHT_API_LLM_API_KEY}
       - HINDSIGHT_API_RERANKER_LITELLM_MODEL=${HINDSIGHT_API_RERANKER_LITELLM_MODEL}
 

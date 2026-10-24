@@ -1,0 +1,28 @@
+{
+  "host": "127.0.0.1",
+  "backend": "hip",
+  "threads": 6,
+  "lazy_load": true,
+  "models": [
+    {
+      "id": "vieneu-tts",
+      "family": "vieneu_v3_turbo",
+      "path": "/models/VieNeu-TTS-v3-Turbo-GGUF/vieneu-v3-turbo-q8_0.gguf",
+      "task": "tts",
+      "mode": "offline",
+      "session_options": {
+        "vieneu_v3_turbo.g2p_library": "/models/sea_g2p/libsea_g2p_rs.so",
+        "vieneu_v3_turbo.g2p_dict": "/models/sea_g2p/sea_g2p.bin"
+      },
+      "voice_presets": {
+        "minh_quan_pro": {
+          "options": {
+            "reference_codes_file": "/models/VieNeu-TTS-v3-Turbo-GGUF/voices/minh_quan_pro/ref_codes.txt",
+            "speaker_embedding_file": "/models/VieNeu-TTS-v3-Turbo-GGUF/voices/minh_quan_pro/speaker.emb.txt"
+          }
+        }
+      },
+      "default_voice_preset": "minh_quan_pro"
+    }
+  ]
+}
