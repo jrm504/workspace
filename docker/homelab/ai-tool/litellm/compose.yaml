@@ -68,7 +68,7 @@ services:
       - backend
 
   redis:
-    image: redis:8.10.3-alpine@sha256:21090af93f8324db2f0f0f4f38a7c60369d47d917e000c3423d89d2ae2883537
+    image: redis:8.8.3-alpine@sha256:cc9d0aecc235bda23e80287b5ef7c131cae443045b9a332d45932feb71a1e70e
     restart: unless-stopped
     environment:
       REDIS_PASSWORD: ${LITELLM_REDIS_PASSWORD:?LITELLM_REDIS_PASSWORD is required}
