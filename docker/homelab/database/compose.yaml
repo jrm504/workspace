@@ -1,6 +1,6 @@
 services:
   db:
-    image: google/alloydbomni:16.14.0@sha256:6f9f2a87354dac2eed5e3a84fb1e6ccfce0429d4176623a3396a6012e6fc5e47
+    image: google/alloydbomni:17.10.0@sha256:ee3a5ed22fe0d239db05c990b2e0bdee6af9a40e6b7f3566fc2be4c1d4947a3e
     container_name: hindsight-db-alloydb
     restart: always
     environment:
@@ -13,7 +13,7 @@ services:
       - hindsight-net
 
   alloydb-init:
-    image: google/alloydbomni:16.14.0@sha256:6f9f2a87354dac2eed5e3a84fb1e6ccfce0429d4176623a3396a6012e6fc5e47
+    image: google/alloydbomni:17.10.0@sha256:ee3a5ed22fe0d239db05c990b2e0bdee6af9a40e6b7f3566fc2be4c1d4947a3e
     depends_on:
       - db
     environment:
