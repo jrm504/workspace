@@ -6,7 +6,7 @@ ARG GFX_TARGET=gfx1030
 ############################
 # Stage 1: build venv + prune kernels
 ############################
-FROM ubuntu:24.04 AS build
+FROM ubuntu:26.04 AS build
 ARG TORCH_INDEX
 ARG GFX_TARGET
 
@@ -31,7 +31,7 @@ RUN L=/opt/venv/lib/python3.12/site-packages/torch/lib; \
 ############################
 # Stage 2: runtime
 ############################
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       python3 ca-certificates libgomp1 libnuma1 \
