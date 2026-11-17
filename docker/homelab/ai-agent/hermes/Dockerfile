@@ -1,4 +1,4 @@
-FROM nousresearch/hermes-agent:stable-desktop@sha256:04f7a36d125bc3ebdef090cd5cf0cccaa74699e5a1a77c2965a4db437f24bf13
+FROM nousresearch/hermes-agent:stable-desktop@sha256:87f24ae4be14980a3f2334bfe6516695253cb36dee5e9113b4348feea304c2ca
 
 
 COPY --from=ghcr.io/jdx/mise:2026.11.8 /usr/local/bin/mise /usr/local/bin/mise
