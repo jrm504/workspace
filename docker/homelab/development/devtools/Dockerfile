@@ -1,4 +1,4 @@
-FROM nousresearch/hermes-sandbox:v0.21.7-desktop@sha256:c7d8607d076f26a64e0bd6828f74e1764af43fe3281368188459bb693bfa7567
+FROM nousresearch/hermes-sandbox:v0.23.3-desktop@sha256:a561d383d4cf554cd98ca528a450574f86e0b3dcd9496d5b9b0fbd09482c6dd3
 
 COPY --from=ghcr.io/jdx/mise:2026.11.8@sha256:5c6e71a86c8c997c32d30a169b4269bec9d4681a804e29078bac8f44109f2edc /usr/local/bin/mise /usr/local/bin/mise
 
